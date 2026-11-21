@@ -10,7 +10,8 @@ one-month-lead correlations, and presents the results in an interactive Streamli
 
 **China's PMI does not reliably lead copper or LATAM currencies in this data.** An apparent
 one-month lead (r ≈ 0.2) comes almost entirely from the COVID shock: excluding Feb–Apr 2020
-removes it. See *Robustness check* below.
+removes it, and the US dollar explains far more of these markets' monthly moves. See *Robustness check*
+and *Dollar control and out-of-sample test* below.
 
 ## First-pass correlations (Nov 2016 – Oct 2026, 118–119 months)
 
@@ -48,6 +49,24 @@ survive the robustness check below.
 ![Lag profile](lag_profile.png)
 ![Rolling correlation](rolling_correlation.png)
 
+## Dollar control and out-of-sample test
+
+**Controlling for the US dollar** (Broad US Dollar Index, FRED DTWEXBGS). Regression of each monthly
+return on last month's PMI change plus this month's dollar move (% return per 1-point PMI change, or per 1% dollar move):
+
+| Market | PMI, no control | PMI, with dollar control | Dollar (same month) |
+|---|---|---|---|
+| Copper | +0.52 (p ≈ 0.03) | +0.35 (p ≈ 0.09) | −2.0 (p < 0.001) |
+| Mexican peso | +0.32 (p ≈ 0.02) | +0.19 (p ≈ 0.07) | −1.5 (p < 0.001) |
+| Chilean peso | +0.04 (p ≈ 0.73) | −0.03 (p ≈ 0.79) | −0.8 (p < 0.001) |
+| Brazilian real | +0.19 (p ≈ 0.24) | +0.06 (p ≈ 0.67) | −1.6 (p < 0.001) |
+
+The dollar dominates; PMI is not significant anywhere once it is included (or once COVID is excluded).
+
+**Out-of-sample:** fitted on Dec 2016 – Dec 2022, tested on Jan 2023 – Oct 2026 (46 months). Test-period
+correlations are near zero (copper 0.07, MXN −0.01, CLP −0.13, BRL 0.03), and out-of-sample R² versus
+predicting the average return is +0.9% for copper and −0.5% to −1.9% for the currencies — no useful predictive power.
+
 ## Data sources
 
 | Series | Source |
@@ -65,6 +84,7 @@ survive the robustness check below.
 | `analyzer_v2.py` | Same-month and one-month-lead correlations; saves `lag_results.csv` and two charts. |
 | `latam_heatmap.py` | Adds currencies and non-manufacturing PMI; saves `latam_monthly.csv`, `heatmap_results.csv`, `correlation_heatmap.png`. |
 | `lag_scan.py` | Leads of 0–6 months for 4 PMI versions; rolling 36-month correlation; saves `lag_scan_results.csv`, `rolling_correlation.csv`, `lag_profile.png`, `rolling_correlation.png`. |
+| `robustness_v2.py` | Dollar control and out-of-sample test; saves `robustness_results.csv`, `usd_index_monthly.csv`. |
 | `app.py` | Streamlit dashboard (reads the saved CSVs; no live data). Lead slider 0–6, COVID on/off switch, lag profile, rolling correlation, trilingual commentary. |
 
 ## Run it
@@ -77,6 +97,7 @@ python data_fetcher_v2.py
 python analyzer_v2.py
 python latam_heatmap.py
 python lag_scan.py
+python robustness_v2.py
 streamlit run app.py
 ```
 
@@ -88,9 +109,7 @@ streamlit run app.py
 
 ## Next steps
 
-- Control for the US dollar (regress returns on lagged PMI plus a dollar index).
 - Granger causality tests in both directions.
-- Out-of-sample test (fit 2016–2022, test 2023–2026).
 - Daily Chilean peso data (current CLP series is a monthly average).
 - NBS new-orders sub-index (data.stats.gov.cn was not reachable from outside China).
 
