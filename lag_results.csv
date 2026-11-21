@@ -1,0 +1,5 @@
+test,pearson_r,n_months,p_value_approx
+Same month: PMI change(t) vs copper return(t),-0.137,119,0.133
+1-month lead: PMI change(t) vs copper return(t+1),0.195,118,0.032
+Same month: PMI level(t) vs copper return(t),0.022,119,0.809
+1-month lead: PMI level(t) vs copper return(t+1),0.197,119,0.03

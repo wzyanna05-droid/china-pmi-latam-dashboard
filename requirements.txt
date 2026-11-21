@@ -1,0 +1,4 @@
+# Packages the dashboard needs (used by Streamlit Cloud)
+streamlit>=1.50
+plotly>=5.20
+pandas>=2.0

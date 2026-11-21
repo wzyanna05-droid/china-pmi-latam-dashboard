@@ -1,0 +1,17 @@
+china_indicator,latam_market,pearson_r,n_months,p_value_approx
+Mfg PMI change (t),Copper,-0.137,119,0.133
+Mfg PMI change (t),CLP vs USD,-0.025,119,0.784
+Mfg PMI change (t),MXN vs USD,-0.192,119,0.034
+Mfg PMI change (t),BRL vs USD,-0.173,119,0.058
+Mfg PMI change (t-1),Copper,0.195,118,0.032
+Mfg PMI change (t-1),CLP vs USD,0.033,118,0.726
+Mfg PMI change (t-1),MXN vs USD,0.205,118,0.024
+Mfg PMI change (t-1),BRL vs USD,0.108,118,0.241
+Non-mfg PMI change (t),Copper,-0.142,119,0.121
+Non-mfg PMI change (t),CLP vs USD,-0.021,119,0.819
+Non-mfg PMI change (t),MXN vs USD,-0.129,119,0.159
+Non-mfg PMI change (t),BRL vs USD,-0.169,119,0.063
+Non-mfg PMI change (t-1),Copper,0.16,118,0.082
+Non-mfg PMI change (t-1),CLP vs USD,0.037,118,0.693
+Non-mfg PMI change (t-1),MXN vs USD,0.221,118,0.015
+Non-mfg PMI change (t-1),BRL vs USD,0.129,118,0.162
