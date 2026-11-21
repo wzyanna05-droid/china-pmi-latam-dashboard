@@ -1,0 +1,113 @@
+indicator,market,lead_months,pearson_r,n_months,p_value_approx,significant_p05,significant_bonferroni
+Mfg PMI,Copper,0,-0.137,119,0.1335,False,False
+Mfg PMI,Copper,1,0.195,118,0.0319,True,False
+Mfg PMI,Copper,2,-0.048,117,0.6061,False,False
+Mfg PMI,Copper,3,0.074,116,0.4276,False,False
+Mfg PMI,Copper,4,-0.079,115,0.4006,False,False
+Mfg PMI,Copper,5,0.082,114,0.386,False,False
+Mfg PMI,Copper,6,-0.047,113,0.6197,False,False
+Mfg PMI,CLP vs USD,0,-0.025,119,0.7842,False,False
+Mfg PMI,CLP vs USD,1,0.033,118,0.7256,False,False
+Mfg PMI,CLP vs USD,2,0.082,117,0.3747,False,False
+Mfg PMI,CLP vs USD,3,0.064,116,0.4936,False,False
+Mfg PMI,CLP vs USD,4,-0.023,115,0.8067,False,False
+Mfg PMI,CLP vs USD,5,-0.031,114,0.7442,False,False
+Mfg PMI,CLP vs USD,6,0.064,113,0.4975,False,False
+Mfg PMI,MXN vs USD,0,-0.192,119,0.0344,True,False
+Mfg PMI,MXN vs USD,1,0.205,118,0.024,True,False
+Mfg PMI,MXN vs USD,2,0.195,117,0.0332,True,False
+Mfg PMI,MXN vs USD,3,-0.248,116,0.0064,True,False
+Mfg PMI,MXN vs USD,4,0.166,115,0.0743,False,False
+Mfg PMI,MXN vs USD,5,-0.021,114,0.8281,False,False
+Mfg PMI,MXN vs USD,6,-0.027,113,0.7724,False,False
+Mfg PMI,BRL vs USD,0,-0.173,119,0.0578,False,False
+Mfg PMI,BRL vs USD,1,0.108,118,0.2413,False,False
+Mfg PMI,BRL vs USD,2,0.078,117,0.4044,False,False
+Mfg PMI,BRL vs USD,3,-0.042,116,0.6537,False,False
+Mfg PMI,BRL vs USD,4,0.135,115,0.1481,False,False
+Mfg PMI,BRL vs USD,5,-0.131,114,0.1618,False,False
+Mfg PMI,BRL vs USD,6,0.028,113,0.7682,False,False
+Mfg PMI (3-month avg),Copper,0,0.01,117,0.9113,False,False
+Mfg PMI (3-month avg),Copper,1,0.217,116,0.0175,True,False
+Mfg PMI (3-month avg),Copper,2,-0.052,115,0.5795,False,False
+Mfg PMI (3-month avg),Copper,3,0.073,114,0.4362,False,False
+Mfg PMI (3-month avg),Copper,4,-0.044,113,0.6431,False,False
+Mfg PMI (3-month avg),Copper,5,0.01,112,0.92,False,False
+Mfg PMI (3-month avg),Copper,6,0.071,111,0.4556,False,False
+Mfg PMI (3-month avg),CLP vs USD,0,0.088,117,0.3451,False,False
+Mfg PMI (3-month avg),CLP vs USD,1,0.176,116,0.0561,False,False
+Mfg PMI (3-month avg),CLP vs USD,2,0.12,115,0.1971,False,False
+Mfg PMI (3-month avg),CLP vs USD,3,0.01,114,0.9168,False,False
+Mfg PMI (3-month avg),CLP vs USD,4,0.009,113,0.9211,False,False
+Mfg PMI (3-month avg),CLP vs USD,5,-0.098,112,0.3005,False,False
+Mfg PMI (3-month avg),CLP vs USD,6,0.017,111,0.8609,False,False
+Mfg PMI (3-month avg),MXN vs USD,0,0.201,117,0.028,True,False
+Mfg PMI (3-month avg),MXN vs USD,1,0.152,116,0.1011,False,False
+Mfg PMI (3-month avg),MXN vs USD,2,0.114,115,0.2239,False,False
+Mfg PMI (3-month avg),MXN vs USD,3,-0.101,114,0.2814,False,False
+Mfg PMI (3-month avg),MXN vs USD,4,0.115,113,0.2246,False,False
+Mfg PMI (3-month avg),MXN vs USD,5,-0.022,112,0.8172,False,False
+Mfg PMI (3-month avg),MXN vs USD,6,0.022,111,0.8206,False,False
+Mfg PMI (3-month avg),BRL vs USD,0,0.014,117,0.8821,False,False
+Mfg PMI (3-month avg),BRL vs USD,1,0.142,116,0.1268,False,False
+Mfg PMI (3-month avg),BRL vs USD,2,0.165,115,0.0753,False,False
+Mfg PMI (3-month avg),BRL vs USD,3,-0.038,114,0.6906,False,False
+Mfg PMI (3-month avg),BRL vs USD,4,0.03,113,0.7506,False,False
+Mfg PMI (3-month avg),BRL vs USD,5,-0.139,112,0.142,False,False
+Mfg PMI (3-month avg),BRL vs USD,6,0.113,111,0.2363,False,False
+Non-mfg PMI,Copper,0,-0.142,119,0.1209,False,False
+Non-mfg PMI,Copper,1,0.16,118,0.0818,False,False
+Non-mfg PMI,Copper,2,-0.022,117,0.8136,False,False
+Non-mfg PMI,Copper,3,0.068,116,0.4678,False,False
+Non-mfg PMI,Copper,4,-0.146,115,0.117,False,False
+Non-mfg PMI,Copper,5,0.131,114,0.1618,False,False
+Non-mfg PMI,Copper,6,-0.004,113,0.9682,False,False
+Non-mfg PMI,CLP vs USD,0,-0.021,119,0.8191,False,False
+Non-mfg PMI,CLP vs USD,1,0.037,118,0.6927,False,False
+Non-mfg PMI,CLP vs USD,2,0.124,117,0.1788,False,False
+Non-mfg PMI,CLP vs USD,3,0.037,116,0.6894,False,False
+Non-mfg PMI,CLP vs USD,4,-0.032,115,0.7367,False,False
+Non-mfg PMI,CLP vs USD,5,-0.076,114,0.418,False,False
+Non-mfg PMI,CLP vs USD,6,0.117,113,0.2153,False,False
+Non-mfg PMI,MXN vs USD,0,-0.129,119,0.1592,False,False
+Non-mfg PMI,MXN vs USD,1,0.221,118,0.0147,True,False
+Non-mfg PMI,MXN vs USD,2,0.167,117,0.0697,False,False
+Non-mfg PMI,MXN vs USD,3,-0.151,116,0.1028,False,False
+Non-mfg PMI,MXN vs USD,4,0.12,115,0.1985,False,False
+Non-mfg PMI,MXN vs USD,5,-0.02,114,0.8362,False,False
+Non-mfg PMI,MXN vs USD,6,-0.018,113,0.8507,False,False
+Non-mfg PMI,BRL vs USD,0,-0.169,119,0.0633,False,False
+Non-mfg PMI,BRL vs USD,1,0.129,118,0.1622,False,False
+Non-mfg PMI,BRL vs USD,2,0.115,117,0.2143,False,False
+Non-mfg PMI,BRL vs USD,3,0.003,116,0.9786,False,False
+Non-mfg PMI,BRL vs USD,4,0.069,115,0.4609,False,False
+Non-mfg PMI,BRL vs USD,5,-0.109,114,0.2468,False,False
+Non-mfg PMI,BRL vs USD,6,0.053,113,0.5796,False,False
+Non-mfg PMI (3-month avg),Copper,0,-0.004,117,0.9641,False,False
+Non-mfg PMI (3-month avg),Copper,1,0.172,116,0.0621,False,False
+Non-mfg PMI (3-month avg),Copper,2,-0.083,115,0.3755,False,False
+Non-mfg PMI (3-month avg),Copper,3,0.044,114,0.6419,False,False
+Non-mfg PMI (3-month avg),Copper,4,-0.016,113,0.8684,False,False
+Non-mfg PMI (3-month avg),Copper,5,0.09,112,0.3458,False,False
+Non-mfg PMI (3-month avg),Copper,6,0.079,111,0.41,False,False
+Non-mfg PMI (3-month avg),CLP vs USD,0,0.116,117,0.2093,False,False
+Non-mfg PMI (3-month avg),CLP vs USD,1,0.166,116,0.0728,False,False
+Non-mfg PMI (3-month avg),CLP vs USD,2,0.109,115,0.2419,False,False
+Non-mfg PMI (3-month avg),CLP vs USD,3,-0.059,114,0.5339,False,False
+Non-mfg PMI (3-month avg),CLP vs USD,4,0.007,113,0.9392,False,False
+Non-mfg PMI (3-month avg),CLP vs USD,5,-0.055,112,0.5646,False,False
+Non-mfg PMI (3-month avg),CLP vs USD,6,0.103,111,0.2797,False,False
+Non-mfg PMI (3-month avg),MXN vs USD,0,0.215,117,0.0184,True,False
+Non-mfg PMI (3-month avg),MXN vs USD,1,0.199,116,0.0304,True,False
+Non-mfg PMI (3-month avg),MXN vs USD,2,0.114,115,0.2215,False,False
+Non-mfg PMI (3-month avg),MXN vs USD,3,-0.043,114,0.6466,False,False
+Non-mfg PMI (3-month avg),MXN vs USD,4,0.069,113,0.468,False,False
+Non-mfg PMI (3-month avg),MXN vs USD,5,-0.031,112,0.7422,False,False
+Non-mfg PMI (3-month avg),MXN vs USD,6,0.019,111,0.8439,False,False
+Non-mfg PMI (3-month avg),BRL vs USD,0,0.061,117,0.5101,False,False
+Non-mfg PMI (3-month avg),BRL vs USD,1,0.205,116,0.025,True,False
+Non-mfg PMI (3-month avg),BRL vs USD,2,0.155,115,0.0946,False,False
+Non-mfg PMI (3-month avg),BRL vs USD,3,-0.031,114,0.7437,False,False
+Non-mfg PMI (3-month avg),BRL vs USD,4,0.011,113,0.9105,False,False
+Non-mfg PMI (3-month avg),BRL vs USD,5,-0.13,112,0.1692,False,False
+Non-mfg PMI (3-month avg),BRL vs USD,6,0.115,111,0.2288,False,False
