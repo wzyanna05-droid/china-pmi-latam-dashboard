@@ -2,13 +2,14 @@
 app.py  -  Niche Alpha: China PMI vs LATAM markets (Streamlit dashboard)
 
 Run with:  python run_dashboard.py     (or: streamlit run app.py)
-Data    :  latam_monthly.csv, made by data_fetcher_v2.py + latam_heatmap.py.
+Data    :  latam_monthly_plus.csv (data_fetcher_v2.py + latam_heatmap.py + fetch_new_orders_nbs.py), usd_index_monthly.csv.
            The dashboard reads saved files; it does not download live data.
 
 v2 (21 Nov 2026): lead of 0-6 months, 3-month-average PMI, lag-profile chart,
 rolling 36-month correlation, and a switch to exclude the COVID shock (Feb-Apr 2020).
 """
 import math
+import os
 import re
 
 import pandas as pd
@@ -22,22 +23,26 @@ st.set_page_config(page_title="Niche Alpha: China PMI vs LATAM", layout="wide")
 COVID_PMI_MONTHS = ["2020-02", "2020-03"]                 # PMI fell 14.3, then rose 16.3 points
 COVID_RETURN_MONTHS = ["2020-02", "2020-03", "2020-04"]   # market crash and rebound
 WINDOW = 36
-N_TESTS_SCAN = 112   # lag_scan.py: 4 indicators x 4 markets x 7 leads
+N_TESTS_SCAN = 168   # lag_scan.py: 6 indicators x 4 markets x 7 leads
 
 
 @st.cache_data
-def load():
-    df = pd.read_csv("latam_monthly.csv", parse_dates=["month"]).sort_values("month").reset_index(drop=True)
+def load(files_version):
+    """files_version = modification times of the data files, so the cache refreshes when they change."""
+    df = pd.read_csv("latam_monthly_plus.csv", parse_dates=["month"]).sort_values("month").reset_index(drop=True)
     ret = pd.DataFrame({"month": df["month"]})
     ret["Copper"] = df["copper_price"].pct_change() * 100
     for ccy in ["CLP", "MXN", "BRL"]:
         c = f"usd{ccy.lower()}"
         if c in df:
             ret[f"{ccy} vs USD"] = (df[c].shift(1) / df[c] - 1) * 100   # + = LATAM currency stronger
+    usd = pd.read_csv("usd_index_monthly.csv", parse_dates=["month"])
+    df = df.merge(usd, on="month", how="left")
+    ret["US dollar"] = df["usd"].pct_change() * 100          # + = dollar stronger
     return df, ret
 
 
-df, ret = load()
+df, ret = load(tuple(os.path.getmtime(f) for f in ("latam_monthly_plus.csv", "usd_index_monthly.csv")))
 ym = df["month"].dt.strftime("%Y-%m")
 
 CHINA = {
@@ -45,8 +50,10 @@ CHINA = {
     "Manufacturing PMI (3-month avg)": ("manufacturing_pmi", 3),
     "Non-manufacturing PMI": ("nonmanufacturing_pmi", 1),
     "Non-manufacturing PMI (3-month avg)": ("nonmanufacturing_pmi", 3),
+    "New orders index (NBS)": ("new_orders_index", 1),
+    "New orders index (3-month avg)": ("new_orders_index", 3),
 }
-MARKETS = [c for c in ret.columns if c != "month"]
+MARKETS = [c for c in ret.columns if c not in ("month", "US dollar")]
 LEVELS = {"Copper": ("copper_price", "US cents/lb"), "CLP vs USD": ("usdclp", "CLP per USD"),
           "MXN vs USD": ("usdmxn", "MXN per USD"), "BRL vs USD": ("usdbrl", "BRL per USD")}
 
@@ -99,7 +106,8 @@ col_pmi, _ = CHINA[china_name]
 last, prev = df.iloc[-1], df.iloc[-2]
 lvl_col, lvl_unit = LEVELS[market]
 c1, c2, c3, c4 = st.columns(4)
-pmi_label = "Manufacturing PMI" if col_pmi == "manufacturing_pmi" else "Non-manufacturing PMI"
+pmi_label = {"manufacturing_pmi": "Manufacturing PMI", "nonmanufacturing_pmi": "Non-manufacturing PMI",
+             "new_orders_index": "NBS new orders index"}[col_pmi]
 c1.metric(f"{pmi_label} ({last['month']:%b %Y})", f"{last[col_pmi]:.1f}",
           f"{last[col_pmi] - prev[col_pmi]:+.1f} vs prior month")
 c2.metric(f"{market} return ({last['month']:%b %Y})", f"{ret[market].iloc[-1]:+.2f}%")
@@ -169,6 +177,40 @@ with rc:
     st.caption(f"Each point uses the previous {WINDOW} months (all months). A stable relationship "
                "would stay at a similar level; here it jumps when COVID enters the window and drops when it leaves.")
 
+# ---------------- What actually drives these markets ----------------
+st.subheader("What actually drives these markets?")
+st.caption("Share of each market's monthly moves explained (R²) by China's PMI change last month versus "
+           "the US dollar's move in the same month (Broad US Dollar Index, FRED DTWEXBGS).")
+dv, ds = st.columns([3, 2])
+with dv:
+    comp = []
+    for m in MARKETS:
+        y_m = market_return(m, exclude)
+        r_p = corr(pmi_change(china_name, exclude).shift(1), y_m)[0]
+        r_d, _, p_d, _ = corr(ret["US dollar"].mask(ym.isin(COVID_RETURN_MONTHS)) if exclude else ret["US dollar"], y_m)
+        comp += [{"market": m, "driver": f"{china_name} (last month)", "R² (%)": r_p ** 2 * 100},
+                 {"market": m, "driver": "US dollar (same month)", "R² (%)": r_d ** 2 * 100}]
+    fig6 = px.bar(pd.DataFrame(comp), x="market", y="R² (%)", color="driver", barmode="group",
+                  color_discrete_sequence=["#c0392b", "#2e86c1"], text_auto=".1f")
+    fig6.update_layout(height=380, margin=dict(t=20), xaxis_title=None,
+                       legend=dict(orientation="h", y=-0.2, title=None))
+    st.plotly_chart(fig6)
+with ds:
+    usd_x = ret["US dollar"].mask(ym.isin(COVID_RETURN_MONTHS)) if exclude else ret["US dollar"]
+    r_u, n_u, p_u, pairs_u = corr(usd_x, market_return(market, exclude))
+    pu = pairs_u.copy()
+    pu.columns = ["US dollar return", "Market return"]
+    pu["month"] = df.loc[pu.index, "month"].dt.strftime("%b %Y")
+    fig7 = px.scatter(pu, x="US dollar return", y="Market return", hover_data=["month"])
+    fig7.add_hline(y=0, line_color="grey", line_width=1)
+    fig7.add_vline(x=0, line_color="grey", line_width=1)
+    fig7.update_layout(height=380, margin=dict(t=40), title=f"{market} vs US dollar, same month: r = {r_u:+.2f}",
+                       xaxis_title="US dollar index return, %", yaxis_title=f"{market} return, %")
+    st.plotly_chart(fig7)
+st.caption("The dollar comparison is same-month (it explains moves, it does not predict them); "
+           "the PMI bar uses last month's change, which would be usable for prediction. "
+           "In a regression with both, PMI is not significant for any market (robustness_v2.py).")
+
 # ---------------- Heatmap ----------------
 st.subheader("All combinations at a glance" + (" (COVID excluded)" if exclude else ""))
 rows = {}
@@ -182,7 +224,7 @@ fig3 = px.imshow(heat.round(2), text_auto=True, color_continuous_scale="RdBu_r",
 fig3.update_layout(height=440, margin=dict(t=20))
 st.plotly_chart(fig3)
 st.caption("Positive = market tends to rise (currency strengthens vs USD) when the PMI change is positive. "
-           "CLP uses monthly average rates (OECD via FRED); MXN, BRL and copper use month-end values.")
+           "All markets use month-end values (CLP: Banco Central de Chile dólar observado, daily, via mindicador.cl).")
 
 # ---------------- Commentary (updates with the sidebar choices) ----------------
 st.subheader({"English": "Market commentary", "Español": "Comentario de mercado", "中文": "市场评论"}[lang])
@@ -194,11 +236,14 @@ is_ccy = market != "Copper"
 ccy = market.split()[0]
 NAMES = {
     "English": {"Copper": "copper", "CLP": "the Chilean peso", "MXN": "the Mexican peso", "BRL": "the Brazilian real",
-                "manufacturing_pmi": "manufacturing PMI", "nonmanufacturing_pmi": "non-manufacturing PMI"},
+                "manufacturing_pmi": "manufacturing PMI", "nonmanufacturing_pmi": "non-manufacturing PMI",
+                "new_orders_index": "manufacturing new orders index"},
     "Español": {"Copper": "el cobre", "CLP": "el peso chileno", "MXN": "el peso mexicano", "BRL": "el real brasileño",
-                "manufacturing_pmi": "el PMI manufacturero", "nonmanufacturing_pmi": "el PMI no manufacturero"},
+                "manufacturing_pmi": "el PMI manufacturero", "nonmanufacturing_pmi": "el PMI no manufacturero",
+                "new_orders_index": "el índice de nuevos pedidos manufactureros"},
     "中文": {"Copper": "铜价", "CLP": "智利比索", "MXN": "墨西哥比索", "BRL": "巴西雷亚尔",
-            "manufacturing_pmi": "制造业PMI", "nonmanufacturing_pmi": "非制造业PMI"},
+            "manufacturing_pmi": "制造业PMI", "nonmanufacturing_pmi": "非制造业PMI",
+            "new_orders_index": "制造业新订单指数"},
 }
 nm = NAMES[lang]
 mk = nm[ccy] if is_ccy else nm["Copper"]
@@ -257,8 +302,12 @@ st.markdown(f"{body}{sep}{sig}{sep}{rob}\n\n{tail}")
 with st.expander("Data sources and method"):
     st.markdown(
         "- **China PMI:** National Bureau of Statistics, via AkShare (`macro_china_pmi`).\n"
+        "- **New orders index:** NBS English PMI press releases (fetch_new_orders_nbs.py; cross-checked "
+        "across releases, against the headline PMI and against 9 independent figures).\n"
         "- **Copper:** COMEX HG futures, month-end close, US cents/lb, via Sina Finance / AkShare.\n"
-        "- **Currencies:** FRED – DEXMXUS, DEXBZUS (daily, month-end), CCUSMA02CLM618N (Chile, monthly average).\n"
+        "- **Currencies:** FRED – DEXMXUS, DEXBZUS (daily, month-end); Chile – Banco Central de Chile dólar "
+        "observado (daily, via mindicador.cl, cross-checked 100% against SII tables), month-end = first rate "
+        "published in the next month (it reflects the last banking day's trades).\n"
         "- **Method:** Pearson correlation between the monthly PMI change k months earlier and the monthly return. "
         "PMI is published at month-end, so a lead of 1+ month uses only information public at the time.\n"
         "- **3-month avg:** change in the 3-month moving average of the PMI.\n"

@@ -2,16 +2,16 @@
 lag_scan.py  -  Improvements 1 and 4
 
 1. Lag scan: correlation between China PMI changes in month t-k and each market's
-   return in month t, for k = 0..6, using four PMI versions.
+   return in month t, for k = 0..6, using six PMI versions (incl. NBS new order index).
 4. Stability: rolling 36-month correlation for the one-month lead.
 
-Input : latam_monthly.csv
+Input : latam_monthly_plus.csv (latam_monthly.csv + NBS new order index from fetch_new_orders_nbs.py)
 Output: lag_scan_results.csv, rolling_correlation.csv,
         lag_profile.png, rolling_correlation.png          (new files only)
 
-Note on multiple testing: this runs 4 indicators x 4 markets x 7 lags = 112 tests.
-At p < 0.05 about 5-6 'significant' results are expected by chance alone, so the
-script also reports a Bonferroni-adjusted threshold (0.05 / 112).
+Note on multiple testing: this runs 6 indicators x 4 markets x 7 lags = 168 tests.
+At p < 0.05 about 8-9 'significant' results are expected by chance alone, so the
+script also reports a Bonferroni-adjusted threshold (0.05 / 168).
 """
 import math
 
@@ -21,7 +21,7 @@ import pandas as pd
 MAX_LAG = 6
 WINDOW = 36
 
-df = pd.read_csv("latam_monthly.csv", parse_dates=["month"]).sort_values("month").reset_index(drop=True)
+df = pd.read_csv("latam_monthly_plus.csv", parse_dates=["month"]).sort_values("month").reset_index(drop=True)
 if (df["month"].dt.to_period("M").astype(int).diff().dropna() != 1).any():
     raise SystemExit("STOPPED: gap in the monthly series.")
 
@@ -36,7 +36,11 @@ ind = {
     "Mfg PMI (3-month avg)": df["manufacturing_pmi"].rolling(3).mean().diff(),
     "Non-mfg PMI": df["nonmanufacturing_pmi"].diff(),
     "Non-mfg PMI (3-month avg)": df["nonmanufacturing_pmi"].rolling(3).mean().diff(),
+    "New orders": df["new_orders_index"].diff(),
+    "New orders (3-month avg)": df["new_orders_index"].rolling(3).mean().diff(),
 }
+if df["new_orders_index"].isna().any():
+    raise SystemExit("STOPPED: new_orders_index has missing months - rerun fetch_new_orders_nbs.py.")
 
 
 def corr(x, y):
@@ -71,7 +75,7 @@ roll.assign(month=roll["month"].dt.strftime("%Y-%m")).round(3).to_csv("rolling_c
 # ---- Chart 1: lag profiles (headline vs 3-month avg, manufacturing) ----
 fig, axes = plt.subplots(1, len(ret), figsize=(16, 4), sharey=True)
 for ax, mname in zip(axes, ret):
-    for iname, style in [("Mfg PMI", "-o"), ("Mfg PMI (3-month avg)", "--s")]:
+    for iname, style in [("Mfg PMI", "-o"), ("Mfg PMI (3-month avg)", "--s"), ("New orders", ":^")]:
         s = res[(res["indicator"] == iname) & (res["market"] == mname)]
         ax.plot(s["lead_months"], s["pearson_r"], style, label=iname)
         sig = s[s["significant_p05"]]
@@ -104,6 +108,14 @@ print(f"Significant after Bonferroni: {res['significant_bonferroni'].sum()}")
 print("\nStrongest |r| per market:")
 best = res.loc[res.groupby("market")["pearson_r"].apply(lambda s: s.abs().idxmax())]
 print(best.to_string(index=False))
+# COVID robustness for the new orders index (drop Feb-Mar 2020 changes, Feb-Apr 2020 returns)
+ym = df["month"].dt.strftime("%Y-%m")
+no_ex = df["new_orders_index"].diff().mask(ym.isin(["2020-02", "2020-03"]))
+print("\nNew orders, 1-month lead: all months vs excluding COVID shock")
+for mname, y in ret.items():
+    ra, na, pa = corr(ind["New orders"].shift(1), y)
+    rx, nx, px_ = corr(no_ex.shift(1), y.mask(ym.isin(["2020-02", "2020-03", "2020-04"])))
+    print(f"  {mname:11} all: r={ra:+.3f} p={pa:.3f} n={na} | excl. COVID: r={rx:+.3f} p={px_:.3f} n={nx}")
 print("\nRolling 36-month r (1-month lead, Mfg PMI): min / max per market")
 print(roll[list(ret)].agg(["min", "max"]).round(2).to_string())
 print("\nSaved: lag_scan_results.csv, rolling_correlation.csv, lag_profile.png, rolling_correlation.png")

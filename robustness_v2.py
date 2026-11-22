@@ -10,7 +10,7 @@ robustness_v2.py  -  Improvements 2 and 5
 Each test is run on all months and with the COVID shock excluded (Feb-Mar 2020 PMI changes,
 Feb-Apr 2020 returns), matching the dashboard switch.
 
-Input : latam_monthly.csv + FRED DTWEXBGS (Broad US Dollar Index, daily -> month-end)
+Input : latam_monthly_plus.csv (CLP = month-end since step 6) + FRED DTWEXBGS (Broad US Dollar Index, daily -> month-end)
 Output: usd_index_monthly.csv, robustness_results.csv   (new files only)
 p-values use a normal approximation (no scipy/statsmodels needed).
 """
@@ -26,7 +26,7 @@ TRAIN_END = "2022-12"
 COVID_PMI = ["2020-02", "2020-03"]
 COVID_RET = ["2020-02", "2020-03", "2020-04"]
 
-df = pd.read_csv("latam_monthly.csv", parse_dates=["month"]).sort_values("month").reset_index(drop=True)
+df = pd.read_csv("latam_monthly_plus.csv", parse_dates=["month"]).sort_values("month").reset_index(drop=True)
 ym = df["month"].dt.strftime("%Y-%m")
 
 # ---------- US dollar index from FRED ----------
